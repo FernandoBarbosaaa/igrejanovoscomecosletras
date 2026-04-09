@@ -13,7 +13,7 @@ app.use(express.static('public'));
 // Função para buscar letra usando Genius API (exemplo)
 async function buscarLetra(songName, artistName) {
   // Nota: Você precisa de uma chave API do Genius. Substitua 'YOUR_GENIUS_API_KEY' pela sua chave.
-  const apiKey = 'YOUR_GENIUS_API_KEY';
+  const apiKey = 'aJyWjx2zgA7waiCk_zMBb4aC-t74GEhXNFj5hox6Yx2g84El1KqFi1Y1jXsZXQ2M';
   const searchUrl = `https://api.genius.com/search?q=${encodeURIComponent(songName + ' ' + artistName)}`;
 
   try {

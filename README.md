@@ -17,5 +17,5 @@ Este projeto gera automaticamente arquivos PowerPoint (.pptx) com letras de louv
 
 ## Configuração
 
-- **Busca de letras**: Usa scraping de letras.mus.br (fonte confiável para letras brasileiras). Não requer chave API.
-- Para produção, monitore mudanças no site (pode alterar estrutura HTML).
+- **Busca de letras**: Usa Lyrics.ovh API (gratuita e sem chave). Base de dados extensa, mas pode não ter todas as músicas de louvor.
+- Para produção, se letras não forem encontradas, considere adicionar opção para inserir manualmente.

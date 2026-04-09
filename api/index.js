@@ -1,7 +1,6 @@
 const express = require('express');
 const PptxGenJS = require('pptxgenjs');
 const axios = require('axios');
-const cheerio = require('cheerio');
 const path = require('path');
 const fs = require('fs');
 
@@ -11,24 +10,20 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Função para buscar letra (usando scraping de letras.mus.br)
+// Função para buscar letra (usando Lyrics.ovh API - gratuita e sem chave)
 async function buscarLetra(songName, artistName) {
-  const searchUrl = `https://www.letras.mus.br/buscar.php?q=${encodeURIComponent(songName + ' ' + artistName)}`;
+  const apiUrl = `https://api.lyrics.ovh/v1/${encodeURIComponent(artistName)}/${encodeURIComponent(songName)}`;
 
   try {
-    const response = await axios.get(searchUrl);
-    const $ = cheerio.load(response.data);
-    const firstResult = $('a[href*="/letra/"]').first().attr('href');
-    if (!firstResult) throw new Error('Música não encontrada');
-
-    const letraUrl = `https://www.letras.mus.br${firstResult}`;
-    const letraResponse = await axios.get(letraUrl);
-    const $letra = cheerio.load(letraResponse.data);
-    const letra = $letra('.letra-cnt p').text().trim();
-    if (!letra) throw new Error('Letra não disponível');
-
-    return letra;
+    const response = await axios.get(apiUrl);
+    if (response.data.lyrics) {
+      return response.data.lyrics;
+    }
+    throw new Error('Letra não encontrada');
   } catch (error) {
+    if (error.response && error.response.status === 404) {
+      throw new Error('Música não encontrada na base de dados');
+    }
     throw new Error('Erro ao buscar letra: ' + error.message);
   }
 }
