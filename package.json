@@ -1,0 +1,14 @@
+{
+  "name": "louvores-pptx-generator",
+  "version": "1.0.0",
+  "description": "Gerador de PowerPoint para letras de louvores",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "pptxgenjs": "^3.12.0",
+    "axios": "^1.6.0"
+  }
+}
