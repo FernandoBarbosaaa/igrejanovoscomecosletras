@@ -10,20 +10,15 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Função para buscar letra (usando Genius API)
+// Função para buscar letra (usando Vagalume API - gratuita e sem chave)
 async function buscarLetra(songName, artistName) {
-  const apiKey = 'YOUR_GENIUS_API_KEY'; // Substitua pela sua chave
-  const searchUrl = `https://api.genius.com/search?q=${encodeURIComponent(songName + ' ' + artistName)}`;
+  const searchUrl = `https://api.vagalume.com.br/search.php?art=${encodeURIComponent(artistName)}&mus=${encodeURIComponent(songName)}&apikey={your_key}`; // Opcional: chave gratuita
 
   try {
-    const response = await axios.get(searchUrl, {
-      headers: { 'Authorization': `Bearer ${apiKey}` }
-    });
-    const hits = response.data.response.hits;
-    if (hits.length > 0) {
-      const songUrl = hits[0].result.url;
-      // Em produção, implemente scraping para extrair letra de songUrl.
-      return "Letra de exemplo\n\n[Verso 1]\nTexto do verso\n\n[Coro]\nTexto do coro";
+    const response = await axios.get(searchUrl);
+    const data = response.data;
+    if (data.type === 'song' && data.mus && data.mus.length > 0) {
+      return data.mus[0].text; // Letra completa
     }
     throw new Error('Letra não encontrada');
   } catch (error) {

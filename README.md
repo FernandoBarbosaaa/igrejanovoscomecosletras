@@ -17,5 +17,5 @@ Este projeto gera automaticamente arquivos PowerPoint (.pptx) com letras de louv
 
 ## Configuração
 
-- Chave API do Genius: Obtenha em genius.com/developers.
-- Para produção, implemente scraping da letra usando cheerio ou similar.
+- **Chave API do Vagalume** (opcional, mas recomendada para letras completas): Obtenha gratuitamente em [vagalume.com.br/api](https://api.vagalume.com.br/docs). Substitua `{your_key}` no código ou configure como variável de ambiente `VAGALUME_API_KEY` no Vercel.
+- Para produção, teste a busca de letras reais.
