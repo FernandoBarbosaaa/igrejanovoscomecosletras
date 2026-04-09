@@ -50,13 +50,22 @@ app.post('/generate-pptx', async (req, res) => {
     pptx.defineLayout({ name: 'CUSTOM', width: 10, height: 5.625 }); // 16:9
     pptx.layout = 'CUSTOM';
 
+    // Primeiro slide com título
+    const titleSlide = pptx.addSlide();
+    titleSlide.background = { color: '000000' };
+    titleSlide.addText(`${songName}\n${artistName}`, {
+      x: 0.5, y: 1, w: 9, h: 3.625,
+      fontSize: 48, color: 'FFFFFF', align: 'center', valign: 'middle',
+      fontFace: 'Arial'
+    });
+
     slides.forEach(texto => {
       const slide = pptx.addSlide();
       slide.background = { color: '000000' }; // Fundo escuro
       slide.addText(texto, {
         x: 0.5, y: 0.5, w: 9, h: 4.625,
-        fontSize: 36, color: 'FFFFFF', align: 'left', valign: 'top',
-        lineSpacing: 1.2, fontFace: 'Arial'
+        fontSize: 32, color: 'FFFFFF', align: 'left', valign: 'top',
+        lineSpacing: 1.5, fontFace: 'Arial', wrap: true
       });
     });
 
