@@ -1,6 +1,7 @@
 const express = require('express');
 const PptxGenJS = require('pptxgenjs');
 const axios = require('axios');
+const cheerio = require('cheerio');
 const path = require('path');
 const fs = require('fs');
 
@@ -10,17 +11,23 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Função para buscar letra (usando Vagalume API - gratuita e sem chave)
+// Função para buscar letra (usando scraping de letras.mus.br)
 async function buscarLetra(songName, artistName) {
-  const searchUrl = `https://api.vagalume.com.br/search.php?art=${encodeURIComponent(artistName)}&mus=${encodeURIComponent(songName)}&apikey={your_key}`; // Opcional: chave gratuita
+  const searchUrl = `https://www.letras.mus.br/buscar.php?q=${encodeURIComponent(songName + ' ' + artistName)}`;
 
   try {
     const response = await axios.get(searchUrl);
-    const data = response.data;
-    if (data.type === 'song' && data.mus && data.mus.length > 0) {
-      return data.mus[0].text; // Letra completa
-    }
-    throw new Error('Letra não encontrada');
+    const $ = cheerio.load(response.data);
+    const firstResult = $('a[href*="/letra/"]').first().attr('href');
+    if (!firstResult) throw new Error('Música não encontrada');
+
+    const letraUrl = `https://www.letras.mus.br${firstResult}`;
+    const letraResponse = await axios.get(letraUrl);
+    const $letra = cheerio.load(letraResponse.data);
+    const letra = $letra('.letra-cnt p').text().trim();
+    if (!letra) throw new Error('Letra não disponível');
+
+    return letra;
   } catch (error) {
     throw new Error('Erro ao buscar letra: ' + error.message);
   }
