@@ -54,10 +54,7 @@ app.post('/generate-pptx', async (req, res) => {
     const titleSlide = pptx.addSlide();
     titleSlide.background = { color: '000000' };
     titleSlide.addText(`${songName}\n${artistName}`, {
-      x: 0.5,
-      y: 1,
-      w: 9,
-      h: 3.625,
+      x: 0.5, y: 1, w: 9, h: 3.625,
       fontSize: 48,
       color: 'FFFFFF',
       align: 'center',
@@ -65,7 +62,7 @@ app.post('/generate-pptx', async (req, res) => {
       fontFace: 'Arial'
     });
 
-    // Slides de letra (AJUSTADO)
+    // Slides de letra (CORRIGIDO)
     slides.forEach(linhas => {
       const slide = pptx.addSlide();
       slide.background = { color: '000000' };
@@ -76,13 +73,13 @@ app.post('/generate-pptx', async (req, res) => {
           options: { breakLine: true }
         })),
         {
-          x: 0.3,               // mais próximo da esquerda
+          x: 0.5,
           y: 0.5,
           w: 9,
           h: 4.625,
-          fontSize: 40,         // 👈 tamanho ajustado
+          fontSize: 32,
           color: 'FFFFFF',
-          align: 'left',        // 👈 alinhamento à esquerda
+          align: 'center', // melhor pra telão
           valign: 'top',
           fontFace: 'Arial',
           lineSpacingMultiple: 1.2
