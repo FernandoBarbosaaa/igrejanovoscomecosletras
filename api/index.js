@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Função para buscar letra (usando Lyrics.ovh API - gratuita e sem chave)
+// Função para buscar letra
 async function buscarLetra(songName, artistName) {
   const apiUrl = `https://api.lyrics.ovh/v1/${encodeURIComponent(artistName)}/${encodeURIComponent(songName)}`;
 
@@ -33,7 +33,7 @@ function dividirEmSlides(letra, linhasPorSlide = 4) {
   const linhas = letra.split('\n').filter(l => l.trim());
   const slides = [];
   for (let i = 0; i < linhas.length; i += linhasPorSlide) {
-    slides.push(linhas.slice(i, i + linhasPorSlide).join('\n'));
+    slides.push(linhas.slice(i, i + linhasPorSlide));
   }
   return slides;
 }
@@ -47,30 +47,48 @@ app.post('/generate-pptx', async (req, res) => {
     const slides = dividirEmSlides(letra, linhasPorSlide || 4);
 
     const pptx = new PptxGenJS();
-    pptx.defineLayout({ name: 'CUSTOM', width: 10, height: 5.625 }); // 16:9
+    pptx.defineLayout({ name: 'CUSTOM', width: 10, height: 5.625 });
     pptx.layout = 'CUSTOM';
 
-    // Primeiro slide com título
+    // Slide de título
     const titleSlide = pptx.addSlide();
     titleSlide.background = { color: '000000' };
     titleSlide.addText(`${songName}\n${artistName}`, {
       x: 0.5, y: 1, w: 9, h: 3.625,
-      fontSize: 48, color: 'FFFFFF', align: 'center', valign: 'middle',
+      fontSize: 48,
+      color: 'FFFFFF',
+      align: 'center',
+      valign: 'middle',
       fontFace: 'Arial'
     });
 
-    slides.forEach(texto => {
+    // Slides de letra (CORRIGIDO)
+    slides.forEach(linhas => {
       const slide = pptx.addSlide();
-      slide.background = { color: '000000' }; // Fundo escuro
-      slide.addText(texto, {
-        x: 0.5, y: 0.5, w: 9, h: 4.625,
-        fontSize: 32, color: 'FFFFFF', align: 'left', valign: 'top',
-        lineSpacing: 1.5, fontFace: 'Arial', wrap: true
-      });
+      slide.background = { color: '000000' };
+
+      slide.addText(
+        linhas.map(linha => ({
+          text: linha,
+          options: { breakLine: true }
+        })),
+        {
+          x: 0.5,
+          y: 0.5,
+          w: 9,
+          h: 4.625,
+          fontSize: 32,
+          color: 'FFFFFF',
+          align: 'center', // melhor pra telão
+          valign: 'top',
+          fontFace: 'Arial',
+          lineSpacingMultiple: 1.2
+        }
+      );
     });
 
     const fileName = `${songName.replace(/[^a-zA-Z0-9]/g, '_')}.pptx`;
-    const filePath = path.join('/tmp', fileName); // Usar /tmp no Vercel
+    const filePath = path.join('/tmp', fileName);
 
     await pptx.writeFile({ fileName: filePath });
 
@@ -81,5 +99,4 @@ app.post('/generate-pptx', async (req, res) => {
   }
 });
 
-// Para Vercel, exportar o app
 module.exports = app;
